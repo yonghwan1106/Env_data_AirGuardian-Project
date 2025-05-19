@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숨:맞춤 - 취약계층 맞춤형 대기질 알림 서비스</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 전역 스타일 */
+        :root {
+            --primary-color: #4CAAEE;
+            --secondary-color: #45D09E;
+            --dark-blue: #003366;
+            --light-blue: #E1F5FE;
+            --dark-gray: #333;
+            --medium-gray: #666;
+            --light-gray: #f6f6f6;
+            --white: #fff;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--dark-blue);
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: var(--medium-gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #3b99dd;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* 헤더 스타일 */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            background-color: var(--white);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo span {
+            color: var(--dark-blue);
+        }
+
+        .nav-menu {
+            display: flex;
+        }
+
+        .nav-menu li {
+            margin-left: 30px;
+        }
+
+        .nav-menu li a {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark-gray);
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu li a:hover,
+        .nav-menu li a.active {
+            color: var(--primary-color);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* 히어로 섹션 스타일 */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 600px;
+            overflow: hidden;
+            color: var(--white);
+            padding-top: 80px;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 1;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.4));
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-bottom: 100px;
+            z-index: 10;
+        }
+
+        .hero-title {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .title-top {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .title-main {
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 30px;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        .hero-slider-nav {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .slider-dots {
+            display: flex;
+            margin-right: 30px;
+        }
+
+        .slider-dots .dot {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slider-dots .dot.active {
+            background-color: var(--primary-color);
+        }
+
+        .slider-arrows {
+            display: flex;
+        }
+
+        .slider-arrows .arrow {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: none;
+            color: var(--white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slider-arrows .arrow:hover {
+            color: var(--primary-color);
+        }
+
+        /* 특징 섹션 스타일 */
+        .features {
+            background-color: var(--light-gray);
+        }
+
+        .features-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background-color: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark-blue);
+        }
+
+        .feature-description {
+            color: var(--medium-gray);
+            margin-bottom: 15px;
+        }
+
+        /* 앱 소개 섹션 스타일 */
+        .app-showcase {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-showcase-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .app-content {
+            flex: 1;
+            min-width: 300px;
+            padding-right: 50px;
+        }
+
+        .app-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--dark-blue);
+        }
+
+        .app-description {
+            color: var(--medium-gray);
+            margin-bottom: 30px;
+        }
+
+        .app-features-list {
+            margin-bottom: 30px;
+        }
+
+        .app-feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .app-feature-icon {
+            width: 24px;
+            height: 24px;
+            background-color: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .app-feature-text {
+            color: var(--medium-gray);
+        }
+
+        .app-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .app-image img {
+            max-width: 100%;
+            height: auto;
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+        }
+
+        /* 통계 섹션 스타일 */
+        .stats {
+            background-color: var(--dark-blue);
+            color: var(--white);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .stat-text {
+            font-size: 1.1rem;
+        }
+
+        /* 취약계층 섹션 스타일 */
+        .vulnerable-groups {
+            background-color: var(--light-gray);
+        }
+
+        .groups-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .group-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .group-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .group-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .group-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .group-card:hover .group-image img {
+            transform: scale(1.1);
+        }
+
+        .group-content {
+            padding: 20px;
+        }
+
+        .group-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--dark-blue);
+        }
+
+        .group-description {
+            color: var(--medium-gray);
+            margin-bottom: 15px;
+        }
+
+        /* CTA 섹션 스타일 */
+        .cta {
+            background-color: var(--light-blue);
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--dark-blue);
+        }
+
+        .cta-description {
+            color: var(--medium-gray);
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* 푸터 스타일 */
+        .footer {
+            background-color: var(--dark-blue);
+            color: var(--white);
+            padding: 60px 0 20px;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background-color: var(--primary-color);
+        }
+
+        .footer-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-contact li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .contact-icon {
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 활용 데이터 섹션 스타일 */
+    .bg-blue-50 {
+        background-color: #ebf8ff;
+    }
+    
+    .bg-blue-100 {
+        background-color: #bee3f8;
+    }
+    
+    .bg-blue-200 {
+        background-color: #90cdf4;
+    }
+    
+    .bg-blue-500 {
+        background-color: #4299e1;
+    }
+    
+    .bg-blue-600 {
+        background-color: #3182ce;
+    }
+    
+    .bg-blue-700 {
+        background-color: #2b6cb0;
+    }
+    
+    .text-blue-600 {
+        color: #3182ce;
+    }
+    
+    .text-blue-700 {
+        color: #2b6cb0;
+    }
+    
+    .text-green-400 {
+        color: #68d391;
+    }
+    
+    .text-green-500 {
+        color: #48bb78;
+    }
+    
+    .text-green-700 {
+        color: #2f855a;
+    }
+    
+    .bg-green-50 {
+        background-color: #f0fff4;
+    }
+    
+    .bg-green-200 {
+        background-color: #9ae6b4;
+    }
+    
+    .text-red-700 {
+        color: #c53030;
+    }
+    
+    .bg-red-50 {
+        background-color: #fff5f5;
+    }
+    
+    .bg-red-200 {
+        background-color: #fed7d7;
+    }
+    
+    .border-l-4 {
+        border-left-width: 4px;
+    }
+    
+    .border-blue-500 {
+        border-color: #4299e1;
+    }
+    
+    .border-blue-200 {
+        border-color: #90cdf4;
+    }
+    
+    .border-green-200 {
+        border-color: #9ae6b4;
+    }
+    
+    .border-red-200 {
+        border-color: #fed7d7;
+    }
+    
+    .hover\:shadow-xl:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .transition-shadow {
+        transition-property: box-shadow;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
+    
+    .space-y-4 > * + * {
+        margin-top: 1rem;
+    }
+    
+    .space-y-2 > * + * {
+        margin-top: 0.5rem;
+    }
+    
+    .feature-list {
+        margin-top: 15px;
+        padding-left: 0;
+    }
+    
+    .feature-list li {
+        position: relative;
+        padding: 6px 0 6px 28px;
+        line-height: 1.5;
+        color: var(--medium-gray);
+    }
+    
+    .feature-list li:before {
+        content: '\f058';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        left: 0;
+        top: 6px;
+        color: var(--primary-color);
+    }
+    
+    .feature-list li strong {
+        color: #3b82f6;
+        font-weight: 600;
+    }
+    
+    /* 반응형 스타일 */
+        @media screen and (max-width: 992px) {
+            .title-main {
+                font-size: 4rem;
+            }
+
+            .hero-slider-nav {
+                left: 20px;
+            }
+
+            .app-content {
+                padding-right: 0;
+                margin-bottom: 30px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .header-container {
+                height: 70px;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 80%;
+                height: calc(100vh - 70px);
+                background-color: var(--white);
+                flex-direction: column;
+                align-items: center;
+                padding: 40px 0;
+                transition: all 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-menu li {
+                margin: 0 0 20px 0;
+            }
+
+            .title-top {
+                font-size: 1.5rem;
+            }
+
+            .title-main {
+                font-size: 3rem;
+            }
+
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .slider-dots .dot {
+                width: 30px;
+                height: 30px;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .cta-title {
+                font-size: 2rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .title-main {
+                font-size: 2.5rem;
+            }
+
+            .hero-slider-nav {
+                bottom: 30px;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 섹션 -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="#" class="logo">숨:<span>맞춤</span></a>
+            <div class="mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">홈</a></li> 
+                <li><a href="about.html">소개</a></li>
+                <li><a href="demo.html">서비스 데모</a></li>
+                <li><a href="data.html">활용 데이터</a></li> 
+            </ul>
+        </div>
+    </header>
+
+    <!-- 히어로 섹션 -->
+    <section class="hero-section">
+        <!-- 슬라이드 1 -->
+        <div class="hero-slide active">
+            <div class="hero-background" style="background-image: url('assets/images/pexels-pixabay-221012.jpg');"></div>
+            <div class="hero-overlay"></div>
+        </div>
+        
+        <!-- 슬라이드 2 -->
+        <div class="hero-slide">
+            <div class="hero-background" style="background-image: url('assets/images/pexels-pixabay-459728.jpg');"></div>
+            <div class="hero-overlay"></div>
+        </div>
+        
+        <!-- 슬라이드 3 -->
+        <div class="hero-slide">
+            <div class="hero-background" style="background-image: url('assets/images/pexels-pixabay-531767.jpg');"></div>
+            <div class="hero-overlay"></div>
+        </div>
+        
+        <!-- 슬라이드 4 -->
+        <div class="hero-slide">
+            <div class="hero-background" style="background-image: url('assets/images/pexels-tim-witzdam-1081250691-32079710.jpg');"></div>
+            <div class="hero-overlay"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-title">
+                <span class="title-top">맑은 공기와 함께하는</span>
+                <span class="title-main">숨:맞춤</span>
+            </div>
+            <p class="hero-description">취약계층을 위한 맞춤형 대기질 알림 서비스로 건강한 삶을 지원합니다. 개인별 건강상태에 최적화된 대기오염 정보와 행동지침을 제공합니다.</p>
+            <div class="hero-cta">
+                <a href="#features" class="btn btn-primary">주요 기능 살펴보기</a>
+            </div>
+        </div>
+
+        <div class="hero-slider-nav">
+            <div class="slider-dots">
+                <span class="dot active">1</span>
+                <span class="dot">2</span>
+                <span class="dot">3</span>
+                <span class="dot">4</span>
+            </div>
+            <div class="slider-arrows">
+                <button class="arrow prev"><i class="fas fa-arrow-left"></i></button>
+                <button class="arrow pause"><i class="fas fa-pause"></i></button>
+                <button class="arrow next"><i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 특징 섹션 -->
+    <section id="features" class="section features">
+        <div class="container">
+            <div class="section-title">
+                <h2>맞춤형 대기질 서비스</h2>
+                <p>숨:맞춤은 취약계층의 특성과 건강상태에 맞춘 개인화된 대기질 정보와 행동 가이드를 제공합니다.</p>
+            </div>
+            <div class="features-container">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3 class="feature-title">맞춤형 위험 알림</h3>
+                    <p class="feature-description">개인 건강상태와 취약특성에 따라 차별화된 대기오염 위험 알림을 제공합니다.</p>
+                    <a href="about.html#customized-alerts" class="feature-link">자세히 보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3 class="feature-title">안전 경로 네비게이션</h3>
+                    <p class="feature-description">대기오염 최소화 이동경로를 추천하고 실내 대피소 및 공기청정 시설을 안내합니다.</p>
+                    <a href="demo.html#navigation" class="feature-link">자세히 보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="feature-title">건강 모니터링</h3>
+                    <p class="feature-description">대기질 변화와 개인 건강상태 연관성을 분석하고 증상 패턴을 추적합니다.</p>
+                    <a href="demo.html#monitoring" class="feature-link">자세히 보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 앱 소개 섹션 -->
+    <section id="app-showcase" class="section app-showcase">
+        <div class="container app-showcase-container">
+            <div class="app-content">
+                <h2 class="app-title">대기질과 건강을 연결하는 스마트한 솔루션</h2>
+                <p class="app-description">숨:맞춤은 환경 데이터와 의료 데이터를 융합하여 취약계층에게 최적화된 대기질 정보를 제공합니다. 호흡기 질환자, 노약자, 임산부 등 대기오염에 민감한 계층을 위한 맞춤형 서비스를 경험해보세요.</p>
+                <ul class="app-features-list">
+                    <li class="app-feature-item">
+                        <div class="app-feature-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="app-feature-text">실시간 개인별 대기질 위험지수 제공</span>
+                    </li>
+                    <li class="app-feature-item">
+                        <div class="app-feature-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="app-feature-text">취약계층별 맞춤형 행동요령 안내</span>
+                    </li>
+                    <li class="app-feature-item">
+                        <div class="app-feature-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="app-feature-text">대기오염 예측 및 사전 알림 서비스</span>
+                    </li>
+                    <li class="app-feature-item">
+                        <div class="app-feature-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="app-feature-text">개인 건강 데이터 연동 및 분석</span>
+                    </li>
+                </ul>
+                <a href="about.html" class="btn btn-primary">더 알아보기</a>
+            </div>
+            <div class="app-image">
+                <img src="assets/images/pexels-jundine-2151827663-32105519.jpg" alt="숨:맞춤 앱 화면">
+            </div>
+        </div>
+    </section>
+
+    <!-- 통계 섹션 -->
+    <section class="section stats">
+        <div class="container">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="10000" data-suffix="+명">0</div>
+                    <div class="stat-text">연간 건강 보호 인원</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="50" data-suffix="억원">0</div>
+                    <div class="stat-text">의료비용 절감</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="98" data-suffix="%">0</div>
+                    <div class="stat-text">사용자 만족도</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="3500" data-suffix="+명">0</div>
+                    <div class="stat-text">일일 활성 사용자</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 취약계층 섹션 -->
+    <section id="vulnerable-groups" class="section vulnerable-groups">
+        <div class="container">
+            <div class="section-title">
+                <h2>취약계층 맞춤 서비스</h2>
+                <p>각 취약계층의 특성에 맞는 차별화된 대기질 정보와 건강 보호 가이드를 제공합니다.</p>
+            </div>
+            <div class="groups-container">
+                <div class="group-card">
+                    <div class="group-image">
+                        <img src="assets/images/pexels-polina-tankilevitch-3873179.jpg" alt="호흡기 질환자">
+                    </div>
+                    <div class="group-content">
+                        <h3 class="group-title">호흡기 질환자</h3>
+                        <p class="group-description">천식, COPD 등 호흡기 질환자를 위한 특화된 대기질 정보와 응급 대응 가이드 제공</p>
+                        <a href="about.html#respiratory-patients" class="btn btn-secondary" style="margin-top: 15px;">자세히 보기</a>
+                    </div>
+                </div>
+                <div class="group-card">
+                    <div class="group-image">
+                        <img src="assets/images/pexels-pixabay-302083.jpg" alt="노약자">
+                    </div>
+                    <div class="group-content">
+                        <h3 class="group-title">노약자</h3>
+                        <p class="group-description">65세 이상 고령층의 건강 특성을 고려한 맞춤형 대기질 정보와 행동지침 안내</p>
+                        <a href="about.html#elderly" class="btn btn-secondary" style="margin-top: 15px;">자세히 보기</a>
+                    </div>
+                </div>
+                <div class="group-card">
+                    <div class="group-image">
+                        <img src="assets/images/pexels-leah-newhouse-50725-952597.jpg" alt="임산부 및 영유아">
+                    </div>
+                    <div class="group-content">
+                        <h3 class="group-title">임산부 및 영유아</h3>
+                        <p class="group-description">임산부와 영유아의 건강을 위한 대기오염 민감도 정보와 보호자 가이드라인 제공</p>
+                        <a href="about.html#pregnant-infants" class="btn btn-secondary" style="margin-top: 15px;">자세히 보기</a>
+                    </div>
+                </div>
+                <div class="group-card">
+                    <div class="group-image">
+                        <img src="assets/images/pexels-mikael-blomkvist-8961131.jpg" alt="야외 근로자">
+                    </div>
+                    <div class="group-content">
+                        <h3 class="group-title">야외 근로자</h3>
+                        <p class="group-description">야외 활동이 많은 직업군을 위한 작업시간 최적화 및 보호장비 착용 가이드 제공</p>
+                        <a href="about.html#outdoor-workers" class="btn btn-secondary" style="margin-top: 15px;">자세히 보기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 활용 데이터 섹션 -->
+    <section id="data-usage" class="section bg-gray-50">
+        <div class="container">
+            <div class="section-title">
+                <h2>활용 데이터</h2>
+                <p>환경과 의료 데이터의 융합을 통한 혁신적 서비스</p>
+            </div>
+            
+            <div class="features-container">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="feature-title">공공 데이터</h3>
+                    <ul class="feature-list">
+                        <li>환경부 "미세먼지/초미세먼지 측정정보" <strong>국가중점데이터</strong></li>
+                        <li>환경부 "대기오염측정망 운영 결과" <strong>국가중점데이터</strong></li>
+                        <li>기상청 "기상관측" <strong>국가중점데이터</strong> (온도, 습도, 풍속 등)</li>
+                        <li>건강보험심사평가원 "의료이용지도" 데이터</li>
+                        <li>통계청 "인구통계" <strong>국가중점데이터</strong></li>
+                        <li>행정안전부 "재난 취약계층 정보" 데이터</li>
+                    </ul>
+                    <a href="data.html#public-data" class="btn btn-secondary" style="margin-top: 20px;">공공데이터 자세히 보기</a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">민간 데이터</h3>
+                    <ul class="feature-list">
+                        <li>통신사 유동인구 데이터 - 지역별, 시간대별 인구 이동 패턴</li>
+                        <li>카드사 의료기관 이용 패턴 데이터 - 대기오염과 의료기관 방문 상관관계</li>
+                        <li>웨어러블 디바이스 건강지표 데이터 - 대기질 변화에 따른 건강지표 변동 패턴</li>
+                    </ul>
+                    <a href="data.html#private-data" class="btn btn-secondary" style="margin-top: 20px;">민간데이터 자세히 보기</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA 섹션 -->
+    <section id="cta" class="section cta">
+        <div class="container">
+            <h2 class="cta-title">숨:맞춤과 함께 건강한 삶을 시작하세요</h2>
+            <p class="cta-description">취약계층 맞춤형 대기질 알림 서비스로 대기오염으로부터 건강을 지키세요. 지금 바로 무료로 시작할 수 있습니다.</p>
+            <div class="cta-buttons">
+                <a href="demo.html" class="btn btn-primary">서비스 시작하기</a>
+                <a href="about.html" class="btn btn-secondary">더 알아보기</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 섹션 -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-about">
+                <div class="footer-logo">숨:맞춤</div>
+                <p class="footer-description">취약계층을 위한 맞춤형 대기질 알림 서비스로 건강한 삶을 지원합니다.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3 class="footer-title">빠른 링크</h3>
+                <ul>
+                    <li><a href="#">홈</a></li>
+                    <li><a href="about.html">소개</a></li>
+                    <li><a href="demo.html">서비스 데모</a></li>
+                    <li><a href="data.html">활용 데이터</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3 class="footer-title">지원</h3>
+                <ul>
+                    <li><a href="#">도움말</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">개인정보처리방침</a></li>
+                    <li><a href="#">이용약관</a></li>
+                    <li><a href="#">문의하기</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3 class="footer-title">연락처</h3>
+                <ul>
+                    <li>
+                        <span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span>
+                        <span>서울특별시 서초구 서초대로 123, 4층</span>
+                    </li>
+                    <li>
+                        <span class="contact-icon"><i class="fas fa-phone-alt"></i></span>
+                        <span>02-123-4567</span>
+                    </li>
+                    <li>
+                        <span class="contact-icon"><i class="fas fa-envelope"></i></span>
+                        <span>info@sumaetcum.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 숨:맞춤. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 자바스크립트 -->
+    <script>
+        // 헤더 스크롤 효과
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // 모바일 메뉴 토글
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        mobileToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+
+        // 히어로 슬라이더
+        const slides = document.querySelectorAll('.hero-slide');
+        const dots = document.querySelectorAll('.slider-dots .dot');
+        const prevBtn = document.querySelector('.arrow.prev');
+        const nextBtn = document.querySelector('.arrow.next');
+        const pauseBtn = document.querySelector('.arrow.pause');
+        
+        let currentSlide = 0;
+        let isPlaying = true;
+        let slideInterval = setInterval(nextSlide, 5000);
+        
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            
+            currentSlide = (currentSlide + 1) % slides.length;
+            
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+        
+        function prevSlide() {
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+        
+        function pauseSlide() {
+            if (isPlaying) {
+                clearInterval(slideInterval);
+                pauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                slideInterval = setInterval(nextSlide, 5000);
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+            isPlaying = !isPlaying;
+        }
+        
+        prevBtn.addEventListener('click', function() {
+            prevSlide();
+            if (isPlaying) {
+                clearInterval(slideInterval);
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+        });
+        
+        nextBtn.addEventListener('click', function() {
+            nextSlide();
+            if (isPlaying) {
+                clearInterval(slideInterval);
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+        });
+        
+        pauseBtn.addEventListener('click', pauseSlide);
+        
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                slides[currentSlide].classList.remove('active');
+                dots[currentSlide].classList.remove('active');
+                
+                currentSlide = index;
+                
+                slides[currentSlide].classList.add('active');
+                dots[currentSlide].classList.add('active');
+                
+                if (isPlaying) {
+                    clearInterval(slideInterval);
+                    slideInterval = setInterval(nextSlide, 5000);
+                }
+            });
+        });
+
+        // 통계 카운터 애니메이션 (개선된 버전)
+        const statNumbers = document.querySelectorAll('.stat-number');
+        let hasAnimated = false;
+        
+        const easeOutQuart = (t) => 1 - (--t) * t * t * t;
+        
+        const countUpNumber = (element, start, end, duration) => {
+            const startTime = performance.now();
+            const suffix = element.getAttribute('data-suffix') || '';
+            
+            const updateNumber = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // easing 함수를 적용하여 자연스러운 애니메이션
+                const easedProgress = easeOutQuart(progress);
+                const current = Math.floor(start + (end - start) * easedProgress);
+                
+                // 숫자 포맷팅
+                let displayValue;
+                if (current >= 10000) {
+                    displayValue = current.toLocaleString();
+                } else {
+                    displayValue = current.toString();
+                }
+                
+                element.textContent = displayValue + suffix;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            };
+            
+            requestAnimationFrame(updateNumber);
+        };
+        
+        // 통계 섹션이 뷰포트에 들어왔는지 확인
+        const stats = document.querySelector('.stats');
+        
+        const isInViewport = (element) => {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                rect.bottom >= 0
+            );
+        };
+        
+        const triggerCountAnimation = () => {
+            if (!hasAnimated) {
+                hasAnimated = true;
+                
+                statNumbers.forEach((stat, index) => {
+                    const target = parseInt(stat.getAttribute('data-count'));
+                    
+                    // 각 카운터에 약간의 지연시간을 두어 순차적으로 애니메이션
+                    setTimeout(() => {
+                        countUpNumber(stat, 0, target, 2000); // 2초 동안 카운팅
+                    }, index * 150); // 150ms씩 지연
+                });
+            }
+        };
+        
+        // 스크롤 이벤트
+        window.addEventListener('scroll', () => {
+            if (isInViewport(stats)) {
+                triggerCountAnimation();
+            }
+        });
+        
+        // 페이지 로드 시 통계 섹션이 이미 보이는 경우를 위한 체크
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (isInViewport(stats)) {
+                    triggerCountAnimation();
+                }
+            }, 500);
+        });
+
+        // 스크롤 애니메이션
+        const scrollElements = document.querySelectorAll('.feature-card, .group-card, .app-content, .app-image');
+        
+        const elementInView = (el, dividend = 1) => {
+            const elementTop = el.getBoundingClientRect().top;
+            return (
+                elementTop <= (window.innerHeight || document.documentElement.clientHeight) / dividend
+            );
+        };
+        
+        const displayScrollElement = (element) => {
+            element.classList.add('scrolled');
+        };
+        
+        const hideScrollElement = (element) => {
+            element.classList.remove('scrolled');
+        };
+        
+        const handleScrollAnimation = () => {
+            scrollElements.forEach((el) => {
+                if (elementInView(el, 1.25)) {
+                    displayScrollElement(el);
+                } else {
+                    hideScrollElement(el);
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', () => {
+            handleScrollAnimation();
+        });
+    </script>
+</body>
+</html>

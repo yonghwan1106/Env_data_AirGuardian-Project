@@ -1,0 +1,55 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <!-- 배경 그라데이션 -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f9ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0f2fe;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 배경 -->
+  <rect width="1200" height="800" fill="url(#bgGradient)" />
+  
+  <!-- 구름 및 미세먼지 표현 -->
+  <circle cx="200" cy="200" r="100" fill="#ffffff" opacity="0.6" />
+  <circle cx="350" cy="150" r="80" fill="#ffffff" opacity="0.7" />
+  <circle cx="100" cy="300" r="120" fill="#ffffff" opacity="0.5" />
+  
+  <circle cx="700" cy="400" r="90" fill="#ffffff" opacity="0.6" />
+  <circle cx="850" cy="350" r="70" fill="#ffffff" opacity="0.7" />
+  <circle cx="600" cy="500" r="110" fill="#ffffff" opacity="0.5" />
+  
+  <circle cx="1000" cy="200" r="120" fill="#ffffff" opacity="0.6" />
+  <circle cx="1100" cy="300" r="80" fill="#ffffff" opacity="0.7" />
+  <circle cx="900" cy="150" r="100" fill="#ffffff" opacity="0.5" />
+  
+  <!-- 미세먼지 입자 표현 -->
+  <g opacity="0.2">
+    <circle cx="300" cy="250" r="3" fill="#FFD166" />
+    <circle cx="320" cy="230" r="2" fill="#FFD166" />
+    <circle cx="340" cy="260" r="4" fill="#FFD166" />
+    <circle cx="360" cy="240" r="2" fill="#FFD166" />
+    <circle cx="380" cy="270" r="3" fill="#FFD166" />
+    
+    <circle cx="500" cy="350" r="3" fill="#FFD166" />
+    <circle cx="520" cy="330" r="2" fill="#FFD166" />
+    <circle cx="540" cy="360" r="4" fill="#FFD166" />
+    <circle cx="560" cy="340" r="2" fill="#FFD166" />
+    <circle cx="580" cy="370" r="3" fill="#FFD166" />
+    
+    <circle cx="700" cy="150" r="3" fill="#FFD166" />
+    <circle cx="720" cy="130" r="2" fill="#FFD166" />
+    <circle cx="740" cy="160" r="4" fill="#FFD166" />
+    <circle cx="760" cy="140" r="2" fill="#FFD166" />
+    <circle cx="780" cy="170" r="3" fill="#FFD166" />
+    
+    <circle cx="900" cy="450" r="3" fill="#FFD166" />
+    <circle cx="920" cy="430" r="2" fill="#FFD166" />
+    <circle cx="940" cy="460" r="4" fill="#FFD166" />
+    <circle cx="960" cy="440" r="2" fill="#FFD166" />
+    <circle cx="980" cy="470" r="3" fill="#FFD166" />
+  </g>
+  
+  <!-- 도시 윤곽선 (하단) -->
+  <path d="M0,800 L0,650 L50,650 L70,600 L100,600 L120,650 L150,650 L170,550 L200,550 L220,650 L250,650 L300,500 L350,500 L370,650 L400,650 L450,580 L500,580 L520,650 L550,650 L600,620 L650,620 L670,650 L700,650 L750,550 L800,550 L820,650 L850,650 L900,600 L950,600 L980,650 L1000,650 L1050,580 L1100,580 L1150,650 L1200,650 L1200,800 Z" fill="#333333" opacity="0.1" />
+</svg>

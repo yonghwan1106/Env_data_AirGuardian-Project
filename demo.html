@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숨:맞춤 - 취약계층 맞춤형 대기질 알림 서비스</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 헤더 스타일 (index.html과 동일) */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            background-color: #fff;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4CAAEE;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #003366;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu li {
+            margin-left: 30px;
+        }
+
+        .nav-menu li a {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu li a:hover,
+        .nav-menu li a.active {
+            color: #4CAAEE;
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+        }
+
+        /* 모바일 메뉴 스타일 */
+        @media screen and (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 80%;
+                height: calc(100vh - 80px);
+                background-color: #fff;
+                flex-direction: column;
+                align-items: center;
+                padding: 40px 0;
+                transition: all 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-menu li {
+                margin: 0 0 20px 0;
+            }
+        }
+
+        body {
+            padding-top: 80px;
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- 헤더 섹션 -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">숨:<span>맞춤</span></a>
+            <div class="mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">홈</a></li> 
+                <li><a href="about.html">소개</a></li>
+                <li><a href="demo.html" class="active">서비스 데모</a></li>
+                <li><a href="data.html">활용 데이터</a></li> 
+            </ul>
+        </div>
+    </header>
+ 
+
+    <!-- 헤더 섹션 -->
+    <header class="bg-gradient-primary text-white wave-bg">
+        <div class="container mx-auto px-6 py-16">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 animate__animated animate__fadeInUp">숨:맞춤 서비스 데모</h1>
+            <p class="text-xl max-w-3xl text-blue-100 animate__animated animate__fadeInUp animate__delay-1s">
+                취약계층을 위한 개인 맞춤형 대기질 알림 서비스의 주요 기능을 미리 체험해보세요.
+            </p>
+            <div class="mt-10 animate__animated animate__fadeInUp animate__delay-2s">
+                <a href="#demo-section" class="inline-flex items-center px-5 py-3 bg-white bg-opacity-20 backdrop-filter backdrop-blur-sm rounded-lg border border-white border-opacity-30 hover:bg-opacity-30 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                    체험하기
+                </a>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-16">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#ffffff" fill-opacity="1" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,224C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
+        </div>
+    </header>
+
+    <!-- 앱 데모 섹션 -->
+    <section class="py-16" id="demo-section">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-3">앱 체험하기</h2>
+            <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">다양한 기능을 직접 살펴보고 개인 맞춤형 서비스를 경험해보세요</p>
+            <div class="section-divider"></div>
+            
+            <!-- 데모 탭 네비게이션 -->
+            <div class="flex overflow-x-auto mt-10 mb-8 bg-white rounded-lg shadow-md">
+                <button class="demo-tab active py-4 px-6 font-medium" data-tab="home">
+                    <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    홈 화면
+                </button>
+                <button class="demo-tab py-4 px-6 font-medium" data-tab="map">
+                    <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4"></path>
+                    </svg>
+                    지도 화면
+                </button>
+                <button class="demo-tab py-4 px-6 font-medium" data-tab="alerts">
+                    <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    알림 설정
+                </button>
+                <button class="demo-tab py-4 px-6 font-medium" data-tab="community">
+                    <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    커뮤니티
+                </button>
+                <button class="demo-tab py-4 px-6 font-medium" data-tab="health">
+                    <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    건강 대시보드
+                </button>
+            </div>
+
+            <!-- 데모 콘텐츠 -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
+                <!-- 시각화 영역 -->
+                <div class="lg:col-span-3 order-1 lg:order-1">
+                    <!-- 홈 화면 시각화 -->
+                    <div id="home-visual" class="demo-visual active">
+                        <div class="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto transform transition-all hover-lift">
+                            <!-- 앱 헤더 -->
+                            <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-b border-blue-100">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold text-blue-600">숨:맞춤</span>
+                                    <span class="text-sm text-gray-600">2025년 5월 17일</span>
+                                </div>
+                            </div>
+
+                            <!-- 앱 컨텐츠 -->
+                            <div class="p-6">
+                                <!-- 위험도 게이지 -->
+                                <div class="text-center mb-6">
+                                    <div class="relative inline-block">
+                                        <svg class="w-48 h-48" viewBox="0 0 120 120">
+                                            <defs>
+                                                <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" stop-color="#4CAAEE" />
+                                                    <stop offset="100%" stop-color="#FF6B6B" />
+                                                </linearGradient>
+                                            </defs>
+                                            <circle cx="60" cy="60" r="54" fill="none" stroke="#e2e8f0" stroke-width="12" />
+                                            <circle cx="60" cy="60" r="54" fill="none" stroke="url(#gauge-gradient)" stroke-width="12" 
+                                            stroke-dasharray="0 339" stroke-dashoffset="0" transform="rotate(-90 60 60)">
+                                                <animate attributeName="stroke-dasharray" from="0 339" to="289 339" dur="2s" begin="0.5s" fill="freeze" />
+                                            </circle>
+                                        </svg>
+                                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                            <span class="text-4xl font-bold text-red-500 counter-value" data-count="92">0</span>
+                                            <span class="text-lg font-medium text-red-500">나쁨</span>
+                                        </div>
+                                    </div>
+                                    <p class="mt-3 text-lg font-medium text-gray-700">오늘 당신의 호흡기 위험도</p>
+                                </div>
+
+                                <!-- 비교 지표 -->
+                                <div class="flex justify-center space-x-12 mb-8 px-4 py-3 bg-gray-50 rounded-lg">
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500">일반 대기질</p>
+                                        <p class="text-lg font-semibold text-yellow-500">
+                                            75 <span class="text-sm">(보통)</span>
+                                        </p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500">맞춤 위험도</p>
+                                        <p class="text-lg font-semibold text-red-500">
+                                            92 <span class="text-sm">(나쁨)</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 행동요령 -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        오늘의 행동요령
+                                    </h3>
+                                    
+                                    <div class="space-y-3">
+                                        <!-- 행동요령 1 -->
+                                        <div class="bg-white rounded-lg p-4 shadow-sm border-l-4 border-red-500 transform transition-all hover:scale-102 hover:shadow-md">
+                                            <div class="flex justify-between">
+                                                <p class="font-medium">오전 8시 ~ 오후 1시</p>
+                                                <span class="px-2 py-1 rounded-full text-xs text-white bg-red-500">위험</span>
+                                            </div>
+                                            <p class="mt-2 text-sm text-gray-600">외출 자제를 권장합니다. 부득이한 외출 시 KF94 마스크 착용이 필수적입니다. 천식 증상 악화 위험이 높으니 구급약을 반드시 소지하세요.</p>
+                                        </div>
+                                        
+                                        <!-- 행동요령 2 -->
+                                        <div class="bg-white rounded-lg p-4 shadow-sm border-l-4 border-yellow-500 transform transition-all hover:scale-102 hover:shadow-md">
+                                            <div class="flex justify-between">
+                                                <p class="font-medium">오후 1시 ~ 오후 6시</p>
+                                                <span class="px-2 py-1 rounded-full text-xs text-white bg-yellow-500">주의</span>
+                                            </div>
+                                            <p class="mt-2 text-sm text-gray-600">실외 활동을 1시간 이내로 제한하고, 공원보다는 실내 시설을 이용하세요. 귀가 후 세안과 양치를 권장합니다.</p>
+                                        </div>
+                                        
+                                        <!-- 행동요령 3 -->
+                                        <div class="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-500 transform transition-all hover:scale-102 hover:shadow-md">
+                                            <div class="flex justify-between">
+                                                <p class="font-medium">오후 6시 이후</p>
+                                                <span class="px-2 py-1 rounded-full text-xs text-white bg-green-500">양호</span>
+                                            </div>
+                                            <p class="mt-2 text-sm text-gray-600">저녁 외출 가능한 시간대입니다. 단, 활동량이 많은 운동은 피하고 간단한 산책 정도를 권장합니다.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 지도 화면 시각화 -->
+                    <div id="map-visual" class="demo-visual hidden">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden max-w-sm mx-auto transform transition-all">
+                            <!-- 실시간 정보 상태 바 -->
+                            <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-1.5 px-3 flex justify-between items-center text-xs">
+                                <div class="flex items-center">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    현재 위치: 강남역 부근
+                                </div>
+                                <div class="flex items-center font-semibold">
+                                    <span class="bg-red-500 text-white rounded-full w-2 h-2 mr-1 animate-pulse"></span>
+                                    미세먼지: 나쁨 (75㎍/㎥)
+                                </div>
+                            </div>
+                            
+                            <!-- 지도 검색 바 -->
+                            <div class="p-3 bg-white border-b border-gray-100 shadow-sm z-20 flex items-center">
+                                <div class="flex-1 relative">
+                                    <input 
+                                        type="text" 
+                                        placeholder="목적지 검색" 
+                                        class="w-full py-2 px-4 pr-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-300 text-sm"
+                                    />
+                                    <div class="absolute right-3 top-2.5 text-gray-400">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <button class="ml-2 bg-white p-2 rounded-lg text-gray-500">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <!-- 레이어 선택 탭 -->
+                            <div class="flex text-xs border-b border-gray-100">
+                                <button class="py-2 px-3 text-blue-600 border-b-2 border-blue-500 font-medium flex-1">미세먼지</button>
+                                <button class="py-2 px-3 text-gray-500 flex-1">초미세먼지</button>
+                                <button class="py-2 px-3 text-gray-500 flex-1">오존</button>
+                                <button class="py-2 px-3 text-gray-500 flex-1">이산화질소</button>
+                            </div>
+                            
+                            <!-- 지도 영역 -->
+                            <div class="relative" style="height: 360px;">
+                                <!-- 가상 지도 배경 -->
+                                <div class="absolute inset-0">
+                                    <svg width="100%" height="100%" viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- 기본 배경 -->
+                                        <rect x="0" y="0" width="400" height="480" fill="#f8fafc" />
+                                        
+                                        <!-- 고급 지도 그리드 - 블록과 도로 -->
+                                        <g id="map-blocks">
+                                            <!-- 건물 블록 -->
+                                            <rect x="30" y="30" width="60" height="60" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="100" y="30" width="80" height="60" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="190" y="30" width="60" height="30" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="190" y="70" width="60" height="40" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="260" y="30" width="110" height="80" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            
+                                            <rect x="30" y="100" width="40" height="90" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="80" y="100" width="60" height="40" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="80" y="150" width="60" height="40" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="150" y="100" width="100" height="90" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="260" y="120" width="110" height="70" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            
+                                            <rect x="30" y="200" width="70" height="60" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="110" y="200" width="50" height="60" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="170" y="200" width="80" height="60" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="260" y="200" width="50" height="60" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="320" y="200" width="50" height="60" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            
+                                            <rect x="30" y="270" width="50" height="70" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="90" y="270" width="70" height="70" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="170" y="270" width="90" height="40" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="170" y="320" width="40" height="40" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="220" y="320" width="40" height="40" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="270" y="270" width="100" height="90" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            
+                                            <rect x="30" y="350" width="130" height="100" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="170" y="370" width="90" height="80" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                            <rect x="270" y="370" width="100" height="80" rx="2" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
+                                        </g>
+                                        
+                                        <!-- 주요 도로 -->
+                                        <g id="main-roads">
+                                            <path d="M0,100 L400,100" stroke="#cbd5e1" stroke-width="20" />
+                                            <path d="M0,200 L400,200" stroke="#cbd5e1" stroke-width="20" />
+                                            <path d="M0,270 L400,270" stroke="#cbd5e1" stroke-width="10" />
+                                            <path d="M0,350 L400,350" stroke="#cbd5e1" stroke-width="10" />
+                                            
+                                            <path d="M30,0 L30,480" stroke="#cbd5e1" stroke-width="10" />
+                                            <path d="M90,0 L90,480" stroke="#cbd5e1" stroke-width="10" />
+                                            <path d="M150,0 L150,480" stroke="#cbd5e1" stroke-width="20" />
+                                            <path d="M260,0 L260,480" stroke="#cbd5e1" stroke-width="20" />
+                                            <path d="M320,0 L320,480" stroke="#cbd5e1" stroke-width="10" />
+                                            
+                                            <!-- 도로명 라벨 -->
+                                            <text x="200" y="95" text-anchor="middle" fill="#64748b" font-size="8" font-family="sans-serif">강남대로</text>
+                                            <text x="200" y="195" text-anchor="middle" fill="#64748b" font-size="8" font-family="sans-serif">테헤란로</text>
+                                            <text x="150" y="240" text-anchor="middle" transform="rotate(90 145,240)" fill="#64748b" font-size="8" font-family="sans-serif">역삼로</text>
+                                            <text x="260" y="240" text-anchor="middle" transform="rotate(90 255,240)" fill="#64748b" font-size="8" font-family="sans-serif">언주로</text>
+                                        </g>
+                                        
+                                        <!-- 랜드마크 -->
+                                        <g id="landmarks">
+                                            <rect x="180" y="170" width="40" height="20" rx="2" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1" />
+                                            <text x="200" y="183" text-anchor="middle" fill="#1e40af" font-size="6" font-family="sans-serif">강남역</text>
+                                            
+                                            <rect x="330" y="250" width="40" height="16" rx="2" fill="#bbf7d0" stroke="#22c55e" stroke-width="1" />
+                                            <text x="350" y="260" text-anchor="middle" fill="#166534" font-size="6" font-family="sans-serif">선릉공원</text>
+                                            
+                                            <rect x="260" y="155" width="40" height="16" rx="2" fill="#fecaca" stroke="#ef4444" stroke-width="1" />
+                                            <text x="280" y="165" text-anchor="middle" fill="#991b1b" font-size="6" font-family="sans-serif">신논현역</text>
+                                        </g>
+                                        
+                                        <!-- 대기질 히트맵 레이어 - 반투명 그라데이션 효과 -->
+                                        <defs>
+                                            <radialGradient id="good-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                                <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.5" />
+                                                <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
+                                            </radialGradient>
+                                            <radialGradient id="moderate-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                                <stop offset="0%" style="stop-color:#eab308;stop-opacity:0.5" />
+                                                <stop offset="100%" style="stop-color:#eab308;stop-opacity:0" />
+                                            </radialGradient>
+                                            <radialGradient id="bad-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                                <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.5" />
+                                                <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0" />
+                                            </radialGradient>
+                                            
+                                            <!-- 미세먼지 입자 효과를 위한 필터 -->
+                                            <filter id="dust-particles" x="-50%" y="-50%" width="200%" height="200%">
+                                                <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="noise"/>
+                                                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+                                            </filter>
+                                        </defs>
+                                        
+                                        <!-- 대기질 오버레이 -->
+                                        <g class="air-quality-overlay">
+                                            <circle cx="80" cy="160" r="70" fill="url(#bad-gradient)">
+                                                <animate attributeName="r" values="70;75;70" dur="4s" repeatCount="indefinite" />
+                                            </circle>
+                                            <circle cx="210" cy="100" r="60" fill="url(#moderate-gradient)">
+                                                <animate attributeName="r" values="60;65;60" dur="5s" repeatCount="indefinite" />
+                                            </circle>
+                                            <circle cx="320" cy="150" r="80" fill="url(#bad-gradient)">
+                                                <animate attributeName="r" values="80;85;80" dur="6s" repeatCount="indefinite" />
+                                            </circle>
+                                            <circle cx="190" cy="270" r="50" fill="url(#moderate-gradient)">
+                                                <animate attributeName="r" values="50;55;50" dur="4.5s" repeatCount="indefinite" />
+                                            </circle>
+                                            <circle cx="70" cy="350" r="40" fill="url(#good-gradient)">
+                                                <animate attributeName="r" values="40;45;40" dur="3s" repeatCount="indefinite" />
+                                            </circle>
+                                            <circle cx="350" cy="300" r="70" fill="url(#good-gradient)">
+                                                <animate attributeName="r" values="70;75;70" dur="5s" repeatCount="indefinite" />
+                                            </circle>
+                                        </g>
+                                        
+                                        <!-- 미세먼지 입자 효과 - 농도에 따라 다른 수준 -->
+                                        <g filter="url(#dust-particles)" opacity="0.3">
+                                            <rect x="30" y="100" width="100" height="150" fill="#ef4444" opacity="0.2" />
+                                            <rect x="250" y="100" width="120" height="100" fill="#ef4444" opacity="0.2" />
+                                            <rect x="150" y="250" width="100" height="100" fill="#eab308" opacity="0.15" />
+                                        </g>
+                                        
+                                        <!-- 이동 경로 시각화 -->
+                                        <g id="routes">
+                                            <!-- 최단 경로 - 점선 -->
+                                            <path d="M200,185 L200,200 L260,200 L260,160" 
+                                                stroke="#94a3b8" stroke-width="4" stroke-dasharray="4,4" fill="none" />
+                                            
+                                            <!-- 공기 좋은 경로 - 실선, 애니메이션 효과 -->
+                                            <path id="healthy-route" d="M200,185 L200,270 L320,270 L320,160" 
+                                                stroke="#3b82f6" stroke-width="4" fill="none" stroke-linecap="round" />
+                                            
+                                            <!-- 경로 따라 움직이는 점 -->
+                                            <circle r="4" fill="#3b82f6">
+                                                <animateMotion 
+                                                    dur="3s" 
+                                                    repeatCount="indefinite" 
+                                                    rotate="auto"
+                                                    path="M200,185 L200,270 L320,270 L320,160" />
+                                            </circle>
+                                        </g>
+                                        
+                                        <!-- 현재 위치 마커 - 향상된 효과 -->
+                                        <g id="current-location" transform="translate(200, 185)">
+                                            <circle r="6" fill="#3b82f6" />
+                                            <circle r="12" fill="#3b82f6" fill-opacity="0.3">
+                                                <animate attributeName="r" values="10;15;10" dur="2s" repeatCount="indefinite" />
+                                                <animate attributeName="fill-opacity" values="0.4;0.1;0.4" dur="2s" repeatCount="indefinite" />
+                                            </circle>
+                                        </g>
+                                        
+                                        <!-- 목적지 마커 -->
+                                        <g id="destination" transform="translate(280, 155)">
+                                            <circle r="6" fill="#ef4444" />
+                                            <circle r="10" fill="#ef4444" fill-opacity="0.2">
+                                                <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite" />
+                                                <animate attributeName="fill-opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite" />
+                                            </circle>
+                                        </g>
+                                        
+                                        <!-- 안전한 실내 공간 마커 -->
+                                        <g id="safe-indoor-spaces">
+                                            <circle cx="120" cy="120" r="5" fill="#22c55e" opacity="0.8" />
+                                            <circle cx="250" cy="230" r="5" fill="#22c55e" opacity="0.8" />
+                                            <circle cx="320" cy="350" r="5" fill="#22c55e" opacity="0.8" />
+                                        </g>
+                                    </svg>
+                                </div>
+                                
+                                <!-- 지도 컨트롤 -->
+                                <div class="absolute right-3 top-3 flex flex-col space-y-2">
+                                    <button class="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center transition-all hover:bg-gray-100 hover:shadow-lg focus:outline-none">
+                                        <span class="text-gray-600 font-medium">+</span>
+                                    </button>
+                                    <button class="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center transition-all hover:bg-gray-100 hover:shadow-lg focus:outline-none">
+                                        <span class="text-gray-600 font-medium">-</span>
+                                    </button>
+                                    <button class="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center transition-all hover:bg-gray-100 hover:shadow-lg focus:outline-none">
+                                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <!-- 레이어 토글 버튼 -->
+                                <div class="absolute bottom-3 left-3">
+                                    <button class="bg-white px-2 py-1 rounded-lg shadow-md text-xs font-medium flex items-center text-gray-700 transition-all hover:bg-gray-100">
+                                        <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                        </svg>
+                                        레이어
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 경로 카드 -->
+                            <div class="border-t border-gray-100">
+                                <div class="p-3">
+                                    <div class="flex items-center justify-between text-sm mb-2">
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4"></path>
+                                            </svg>
+                                            <span class="font-medium">최적 이동경로</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="px-2 py-0.5 rounded-full text-xs text-white bg-green-500 mr-1">안전함</span>
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 경로 비교 -->
+                                    <div class="bg-gray-50 rounded-lg p-2 mb-2 flex text-xs">
+                                        <div class="flex-1 flex flex-col items-center border-r border-gray-200 pr-2">
+                                            <div class="flex items-center">
+                                                <div class="w-2 h-2 rounded-full bg-blue-500 mr-1"></div>
+                                                <span>공기 좋은 길</span>
+                                            </div>
+                                            <div class="mt-1 flex items-center text-gray-700">
+                                                <svg class="h-3 w-3 mr-0.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                <span>미세먼지 노출 40% 감소</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 flex flex-col items-center pl-2">
+                                            <div class="flex items-center">
+                                                <div class="w-2 h-2 rounded-full bg-gray-400 mr-1"></div>
+                                                <span>최단 경로</span>
+                                            </div>
+                                            <div class="mt-1 text-gray-700">
+                                                <span>5분 더 소요</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-between text-xs text-gray-600 mb-2">
+                                        <div>현위치: 강남역 2번 출구</div>
+                                        <div>도착: 신논현역</div>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="text-gray-500 mr-1">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                                    </svg>
+                                                </span>
+                                                <span class="text-xs font-medium">15 분</span>
+                                            </div>
+                                            <div class="flex items-center mt-1">
+                                                <span class="text-gray-500 mr-1">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M19 12H5"></path>
+                                                        <polyline points="12 19 5 12 12 5"></polyline>
+                                                    </svg>
+                                                </span>
+                                                <span class="text-xs font-medium">1.2 km</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <button class="text-sm px-3 py-2 bg-blue-500 text-white font-medium rounded-lg transition-all hover:bg-blue-600 active:transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50">
+                                            공기 좋은 길 안내
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 알림 설정 시각화 -->
+                    <div id="alerts-visual" class="demo-visual hidden">
+                        <div class="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto transform transition-all hover-lift">
+                            <!-- 헤더 -->
+                            <div class="flex items-center bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-b border-blue-100">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-blue-500">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                                <h2 class="text-xl font-semibold text-blue-600">알림 설정</h2>
+                            </div>
+
+                            <!-- 알림 설정 폼 -->
+                            <div class="p-6">
+                                <!-- 건강 프로필 -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        건강 프로필
+                                    </h3>
+                                    <div class="bg-gradient-card p-4 rounded-lg shadow-sm">
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">질환 유형</label>
+                                            <select class="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                                <option>천식</option>
+                                                <option>만성폐쇄성폐질환(COPD)</option>
+                                                <option>알레르기 비염</option>
+                                                <option>기타 호흡기 질환</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">질환 심각도</label>
+                                            <div class="flex items-center">
+                                                <button class="w-1/3 py-1 text-center bg-gray-100 text-gray-600 rounded-l-md transition-colors hover:bg-gray-200">
+                                                    경증
+                                                </button>
+                                                <button class="w-1/3 py-1 text-center bg-blue-100 text-blue-600 font-medium transition-colors hover:bg-blue-200">
+                                                    중등도
+                                                </button>
+                                                <button class="w-1/3 py-1 text-center bg-gray-100 text-gray-600 rounded-r-md transition-colors hover:bg-gray-200">
+                                                    중증
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 알림 임계값 -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                        알림 임계값 설정
+                                    </h3>
+                                    <div class="bg-gradient-card p-4 rounded-lg shadow-sm">
+                                        <div class="mb-4">
+                                            <div class="flex justify-between mb-1">
+                                                <label class="text-sm font-medium text-gray-700">미세먼지(PM2.5) 임계값</label>
+                                                <span class="text-sm font-medium">35 μg/m³</span>
+                                            </div>
+                                            <input 
+                                                type="range" 
+                                                min="10" 
+                                                max="100" 
+                                                step="5" 
+                                                value="35" 
+                                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                                <span>10</span>
+                                                <span>35</span>
+                                                <span>75</span>
+                                                <span>100</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <label class="text-sm font-medium text-gray-700">오존(O₃) 임계값</label>
+                                                <span class="text-sm font-medium">0.06 ppm</span>
+                                            </div>
+                                            <input 
+                                                type="range" 
+                                                min="0.01" 
+                                                max="0.2" 
+                                                step="0.01" 
+                                                value="0.06"
+                                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                                <span>0.01</span>
+                                                <span>0.06</span>
+                                                <span>0.12</span>
+                                                <span>0.2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 알림 유형 -->
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold mb-3 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                        </svg>
+                                        알림 유형
+                                    </h3>
+                                    <div class="bg-gradient-card p-4 rounded-lg shadow-sm space-y-4">
+                                        <div class="flex justify-between items-center">
+                                            <label class="text-sm font-medium text-gray-700">푸시 알림</label>
+                                            <div class="toggle-switch active">
+                                                <div class="toggle-switch-handle"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex justify-between items-center">
+                                            <label class="text-sm font-medium text-gray-700">SMS 알림</label>
+                                            <div class="toggle-switch">
+                                                <div class="toggle-switch-handle"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex justify-between items-center">
+                                            <label class="text-sm font-medium text-gray-700">홈 화면 위젯</label>
+                                            <div class="toggle-switch active">
+                                                <div class="toggle-switch-handle"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 저장 버튼 -->
+                                <button class="btn btn-primary w-full">
+                                    설정 저장
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 커뮤니티 시각화 -->
+                    <div id="community-visual" class="demo-visual hidden">
+                        <div class="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto transform transition-all hover-lift">
+                            <!-- 헤더 -->
+                            <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                        <svg class="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                        커뮤니티
+                                    </h2>
+                                    <div class="flex space-x-2">
+                                        <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="11" cy="11" r="8"></circle>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                            </svg>
+                                        </button>
+                                        <button class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 필터 탭 -->
+                                <div class="flex mt-4 border-b">
+                                    <button class="demo-tab active pb-2 px-3">
+                                        전체
+                                    </button>
+                                    <button class="demo-tab pb-2 px-3">
+                                        같은 질환
+                                    </button>
+                                    <button class="demo-tab pb-2 px-3">
+                                        내 지역
+                                    </button>
+                                    <button class="demo-tab pb-2 px-3">
+                                        인기글
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 게시물 목록 -->
+                            <div class="p-4 space-y-4">
+                                <!-- 게시물 1 -->
+                                <div class="bg-gradient-card rounded-lg p-4 shadow-sm border border-gray-100 hover-lift">
+                                    <div class="flex justify-between mb-2">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                <span class="text-xs font-medium text-blue-600">JK</span>
+                                            </div>
+                                            <div class="ml-2">
+                                                <p class="text-sm font-medium">김지원</p>
+                                                <p class="text-xs text-gray-500">천식 / 서울시 강남구</p>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-500">2시간 전</p>
+                                    </div>
+                                    
+                                    <h3 class="font-medium mb-1">오늘 공기가 안좋은데 야외활동 어떻게 하시나요?</h3>
+                                    <p class="text-sm text-gray-600 mb-3">안녕하세요, 오늘 미세먼지가 '나쁨'인데 꼭 야외에서 1시간 정도 활동해야 할 일이 있어요. 같은 천식 환자분들은 이럴 때 어떻게 대처하시나요? 마스크 종류나 약 복용 타이밍 등 조언 부탁드립니다!</p>
+                                    
+                                    <div class="flex space-x-4 text-sm text-gray-500">
+                                        <div class="flex items-center hover:text-blue-500 transition-colors cursor-pointer">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                            </svg>
+                                            <span class="ml-1">12</span>
+                                        </div>
+                                        <div class="flex items-center hover:text-blue-500 transition-colors cursor-pointer">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                            </svg>
+                                            <span class="ml-1">8</span>
+                                        </div>
+                                        <div class="flex items-center hover:text-blue-500 transition-colors cursor-pointer">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                                <polyline points="16 6 12 2 8 6"></polyline>
+                                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                                            </svg>
+                                            <span class="ml-1">공유</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 게시물 2 -->
+                                <div class="bg-gradient-card rounded-lg p-4 shadow-sm border border-gray-100 hover-lift">
+                                    <div class="flex justify-between mb-2">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                                <span class="text-xs font-medium text-green-600">SL</span>
+                                            </div>
+                                            <div class="ml-2">
+                                                <p class="text-sm font-medium">이서연</p>
+                                                <p class="text-xs text-gray-500">알레르기 비염 / 부산시 해운대구</p>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-500">어제</p>
+                                    </div>
+                                    
+                                    <h3 class="font-medium mb-1">공기청정기 추천해주세요!</h3>
+                                    <p class="text-sm text-gray-600 mb-3">알레르기 비염이 심해서 집에 공기청정기를 들이려고 합니다. 비슷한 증상 있으신 분들 중 효과 좋으셨던 제품 추천 부탁드려요. 가성비 좋고 소음 적은 제품이면 더 좋겠어요~</p>
+                                    
+                                    <div class="flex space-x-4 text-sm text-gray-500">
+                                        <div class="flex items-center hover:text-blue-500 transition-colors cursor-pointer">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                            </svg>
+                                            <span class="ml-1">24</span>
+                                        </div>
+                                        <div class="flex items-center hover:text-blue-500 transition-colors cursor-pointer">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                            </svg>
+                                            <span class="ml-1">15</span>
+                                        </div>
+                                        <div class="flex items-center hover:text-blue-500 transition-colors cursor-pointer">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                                <polyline points="16 6 12 2 8 6"></polyline>
+                                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                                            </svg>
+                                            <span class="ml-1">공유</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 인기 태그 -->
+                            <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-t border-gray-200">
+                                <h3 class="text-sm font-medium mb-2">인기 태그</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer">#미세먼지</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer">#천식</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer">#마스크추천</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer">#공기청정기</span>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded-full hover:bg-blue-200 transition-colors cursor-pointer">#환절기</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 건강 대시보드 시각화 -->
+                    <div id="health-visual" class="demo-visual hidden">
+                        <div class="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto transform transition-all hover-lift">
+                            <!-- 헤더 -->
+                            <div class="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-100">
+                                <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <svg class="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    내 건강 기록
+                                </h2>
+                                <select class="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                    <option>최근 7일</option>
+                                    <option>최근 30일</option>
+                                    <option>최근 3개월</option>
+                                </select>
+                            </div>
+                            
+                            <!-- 대시보드 내용 -->
+                            <div class="p-4">
+                                <!-- 대기질 노출과 증상 그래프 -->
+                                <div class="bg-gradient-card rounded-lg p-4 shadow-sm mb-6">
+                                    <h3 class="text-md font-semibold mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                                        </svg>
+                                        대기질 노출 대비 증상 기록
+                                    </h3>
+                                    
+                                    <!-- 그래프 -->
+                                    <div class="h-52 mb-4">
+                                        <canvas id="exposureSymptomChart"></canvas>
+                                    </div>
+                                    
+                                    <!-- 범례 -->
+                                    <div class="flex justify-center space-x-8 mt-2">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full mr-2 bg-blue-500"></div>
+                                            <span class="text-sm">대기질 지수</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full mr-2 bg-red-500"></div>
+                                            <span class="text-sm">증상 심각도</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 대기오염 노출 통계 -->
+                                <div class="bg-gradient-card rounded-lg p-4 shadow-sm mb-6">
+                                    <h3 class="text-md font-semibold mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                                        </svg>
+                                        대기오염 노출 통계
+                                    </h3>
+                                    
+                                    <div class="flex">
+                                        <!-- 도넛 차트 -->
+                                        <div class="w-1/2">
+                                            <canvas id="exposureChart" height="150"></canvas>
+                                        </div>
+                                        
+                                        <!-- 범례 -->
+                                        <div class="w-1/2 flex flex-col justify-center">
+                                            <div class="flex items-center mb-3">
+                                                <div class="w-3 h-3 rounded-full mr-2 bg-green-500"></div>
+                                                <span class="text-sm">좋음: 20%</span>
+                                            </div>
+                                            <div class="flex items-center mb-3">
+                                                <div class="w-3 h-3 rounded-full mr-2 bg-yellow-500"></div>
+                                                <span class="text-sm">보통: 48%</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <div class="w-3 h-3 rounded-full mr-2 bg-red-500"></div>
+                                                <span class="text-sm">나쁨: 32%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 건강 리포트 공유 버튼 -->
+                                <div class="space-y-3">
+                                    <button class="btn btn-primary w-full flex items-center justify-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        건강 리포트 생성하기
+                                    </button>
+                                    <button class="btn btn-outline w-full flex items-center justify-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                        </svg>
+                                        의사와 데이터 공유하기
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 설명 영역 -->
+                <div class="lg:col-span-2 order-2 lg:order-2">
+                    <!-- 홈 화면 설명 -->
+                    <div id="home-content" class="demo-content active bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4 text-blue-600">홈 화면</h2>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            숨:맞춤의 홈 화면은 사용자에게 가장 중요한 정보를 한눈에 보여줍니다. 개인의 건강 상태, 위치, 그리고 현재 대기질 정보를 결합하여 맞춤형 위험도를 계산합니다.
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            주요 기능
+                        </h3>
+                        <ul class="space-y-4 mb-6 feature-list">
+                            <li>
+                                <strong>개인 맞춤형 위험지수:</strong> 일반 대기질 지수가 아닌, 사용자의 건강 상태를 고려한 개인화된 위험도를 제공합니다.
+                            </li>
+                            <li>
+                                <strong>시간대별 행동요령:</strong> 당일 시간대별 대기질 예측과 함께 맞춤형 행동요령을 제공합니다.
+                            </li>
+                            <li>
+                                <strong>위험도 시각화:</strong> 직관적인 원형 게이지로 현재 위험도를 시각화하여 쉽게 이해할 수 있습니다.
+                            </li>
+                        </ul>
+                        
+                        <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-400 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-2 text-blue-700 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                천식 환자 사용 사례
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed">
+                                38세 김지원 님은 천식 환자입니다. 일반 대기질 앱에서는 '보통' 수준으로 표시된 날에도, 숨:맞춤은 그의 천식 상태를 고려하여 '주의' 단계로 알려줍니다. 오전에 외출해야 할 일이 있어 앱을 확인했더니 정확한 행동요령(마스크 착용, 구급약 소지)과 최적 이동 시간을 추천받아 증상 악화 없이 용무를 마칠 수 있었습니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 지도 화면 설명 -->
+                    <div id="map-content" class="demo-content hidden bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4 text-blue-600">지도 화면</h2>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            지도 화면은 실시간 대기질 정보를 지도상에 시각화하고, 사용자에게 최적의 이동 경로를 제안합니다. 대기오염 노출을 최소화하는 경로를 통해 건강을 보호할 수 있습니다.
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            주요 기능
+                        </h3>
+                        <ul class="space-y-4 mb-6 feature-list">
+                            <li>
+                                <strong>대기질 지도:</strong> 지역별 대기오염 농도를 색상으로 시각화하여 한눈에 파악할 수 있습니다.
+                            </li>
+                            <li>
+                                <strong>공기 좋은 길 안내:</strong> 대기오염 노출을 최소화하는 경로로 안내합니다. 경유차 통행량이 많은 도로를 피해 안전한 경로를 제공합니다.
+                            </li>
+                            <li>
+                                <strong>실내 대피소 안내:</strong> 가까운 공기청정 시설이나 실내 대피소 위치를 표시합니다.
+                            </li>
+                        </ul>
+                        
+                        <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-400 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-2 text-blue-700 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                COPD 환자 사용 사례
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed">
+                                65세 박정훈 님은 COPD 환자로, 병원에 정기 검진을 받으러 가야 했습니다. 숨:맞춤의 지도 기능을 통해 대기오염이 심한 도로를 피하는 경로를 안내받았고, 도중에 대기질이 갑자기 나빠졌을 때 근처 실내 대피소를 추천받아 잠시 휴식을 취한 후 안전하게 병원에 도착할 수 있었습니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 알림 설정 설명 -->
+                    <div id="alerts-content" class="demo-content hidden bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4 text-blue-600">알림 설정</h2>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            알림 설정 화면에서는 사용자의 건강 상태와 선호도에 따라 맞춤형 알림을 설정할 수 있습니다. 개인별 임계값과 알림 방식을 직접 설정하여 필요한 정보만 받아볼 수 있습니다.
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            주요 기능
+                        </h3>
+                        <ul class="space-y-4 mb-6 feature-list">
+                            <li>
+                                <strong>건강 프로필 설정:</strong> 질환 유형과 심각도를 설정하여 맞춤형 위험도를 계산합니다.
+                            </li>
+                            <li>
+                                <strong>알림 임계값 설정:</strong> 미세먼지, 오존 등 개별 오염물질에 대한 개인 맞춤 임계값을 설정할 수 있습니다.
+                            </li>
+                            <li>
+                                <strong>알림 방식 선택:</strong> 푸시 알림, SMS, 홈 화면 위젯 등 다양한 알림 방식을 선택할 수 있습니다.
+                            </li>
+                            <li>
+                                <strong>알림 시간 설정:</strong> 특정 시간대에만 알림을 받도록 설정할 수 있습니다.
+                            </li>
+                        </ul>
+                        
+                        <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-400 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-2 text-blue-700 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                임산부 사용 사례
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed">
+                                임신 7개월차인 이수민 님은 태아의 건강을 위해 대기오염에 민감합니다. 숨:맞춤에서 임산부 프로필을 선택하고, 미세먼지 임계값을 일반 기준보다 낮게 설정했습니다. 또한 집 근처 공원에서 가벼운 산책을 즐기는 오전 9시 전후로 알림을 받도록 설정하여, 매일 아침 산책 가능 여부를 확인하고 있습니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 커뮤니티 화면 설명 -->
+                    <div id="community-content" class="demo-content hidden bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4 text-blue-600">커뮤니티</h2>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            커뮤니티 화면에서는 비슷한 건강 상태를 가진 사용자들과 정보를 공유하고 소통할 수 있습니다. 경험과 팁을 나누며 함께 건강을 지키는 공간입니다.
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            주요 기능
+                        </h3>
+                        <ul class="space-y-4 mb-6 feature-list">
+                            <li>
+                                <strong>질환별 커뮤니티:</strong> 같은 질환을 가진 사용자들과 소통할 수 있는 그룹을 제공합니다.
+                            </li>
+                            <li>
+                                <strong>지역별 정보 공유:</strong> 같은 지역 사용자들과 지역 특화 정보를 공유할 수 있습니다.
+                            </li>
+                            <li>
+                                <strong>질의응답:</strong> 대기오염 관련 질문을 올리고 답변을 받을 수 있습니다.
+                            </li>
+                            <li>
+                                <strong>정보 공유:</strong> 공기청정기, 마스크 등 관련 제품 후기나 유용한 정보를 공유할 수 있습니다.
+                            </li>
+                        </ul>
+                        
+                        <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-400 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-2 text-blue-700 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                알레르기 비염 환자 사용 사례
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed">
+                                알레르기 비염을 앓고 있는 정민수 님은 커뮤니티 기능을 통해 비슷한 증상을 가진 사람들과 대처법을 공유합니다. 특히 봄철 황사와 꽃가루가 심한 시기에 효과적인 마스크 종류와 약물 복용 타이밍에 대한 정보를 얻어 증상 관리에 큰 도움을 받고 있습니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 건강 대시보드 설명 -->
+                    <div id="health-content" class="demo-content hidden bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4 text-blue-600">건강 대시보드</h2>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            건강 대시보드는 사용자의 건강 상태와 대기질 노출 간의 상관관계를 분석하여 보여줍니다. 장기적인 건강 패턴을 추적하고 관리할 수 있는 도구입니다.
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold mb-3 flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            주요 기능
+                        </h3>
+                        <ul class="space-y-4 mb-6 feature-list">
+                            <li>
+                                <strong>대기질-증상 상관관계:</strong> 대기오염 노출과 증상 발생 간의 상관관계를 그래프로 시각화합니다.
+                            </li>
+                            <li>
+                                <strong>대기오염 노출 통계:</strong> 일/주/월별 대기오염 노출 정도를 분석합니다.
+                            </li>
+                            <li>
+                                <strong>증상 기록 캘린더:</strong> 증상이 발생한 날짜를 캘린더에 기록하고 패턴을 분석합니다.
+                            </li>
+                            <li>
+                                <strong>건강 리포트 생성:</strong> 주간/월간 건강 리포트를 생성하여 의사와 공유할 수 있습니다.
+                            </li>
+                        </ul>
+                        
+                        <div class="bg-blue-50 p-5 rounded-lg border-l-4 border-blue-400 shadow-sm">
+                            <h4 class="text-lg font-semibold mb-2 text-blue-700 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                노인 사용자 사례
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed">
+                                72세 이영호 님은 건강 대시보드를 통해 미세먼지가 심한 날과 본인의 호흡곤란 증상 사이의 상관관계를 발견했습니다. 매주 병원을 방문할 때 의사에게 앱에서 생성한 건강 리포트를 보여주어 더 정확한 진단과 처방을 받을 수 있었고, 이를 통해 악화 요인을 파악하여 효과적으로 관리하고 있습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA 섹션 -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-4">지금 바로 숨:맞춤을 경험해보세요</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto mb-10">취약계층의 건강을 위한 맞춤형 대기질 정보 서비스로, 건강한 생활을 지원합니다.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-md hover-lift text-center">
+                    <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">앱 다운로드</h3>
+                    <p class="text-gray-600 mb-4">모바일 앱을 통해 언제 어디서나 맞춤형 대기질 정보를 확인하세요.</p>
+                    <a href="#" class="text-blue-600 font-medium flex items-center justify-center">
+                        곧 출시 예정
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md hover-lift text-center">
+                    <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">베타 테스터 신청</h3>
+                    <p class="text-gray-600 mb-4">베타 테스터로 참여하여 서비스를 먼저 경험하고 피드백을 남겨주세요.</p>
+                    <a href="#" class="btn btn-primary inline-block">신청하기</a>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md hover-lift text-center">
+                    <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">소식 받기</h3>
+                    <p class="text-gray-600 mb-4">최신 업데이트 및 출시 소식을 이메일로 받아보세요.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="이메일 주소" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors">구독</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="bg-gray-800 text-white py-16">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-10 md:mb-0 md:w-1/3">
+                    <h3 class="text-2xl font-bold text-gradient mb-6">숨:맞춤</h3>
+                    <p class="text-gray-400 max-w-xs mb-6">미세먼지와 대기오염에 취약한 계층을 위한 맞춤형 대기질 알림 서비스</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:w-2/3">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">서비스</h4>
+                        <ul class="space-y-3 text-gray-400">
+                            <li><a href="about.html" class="hover:text-white transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                서비스 소개
+                            </a></li>
+                            <li><a href="demo.html" class="hover:text-white transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                서비스 데모
+                            </a></li>
+                            <li><a href="data.html" class="hover:text-white transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                데이터 활용
+                            </a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">기술 스택</h4>
+                        <ul class="space-y-3 text-gray-400">
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                </svg>
+                                공공데이터 API
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                </svg>
+                                AI/ML 알고리즘
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                </svg>
+                                위치기반 서비스
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                </svg>
+                                IoT 연동
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">연락처</h4>
+                        <ul class="space-y-3 text-gray-400">
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                airguardian@email.com
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                </svg>
+                                02-1234-5678
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                서울시 강남구 테헤란로 123
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    © 2025 숨:맞춤. 모든 권리 보유.
+                </p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">개인정보처리방침</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">이용약관</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">고객센터</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 스크립트 -->
+    <script src="main.js"></script>
+    <script src="demo.js"></script>
+    <script>
+        // 헤더 스크롤 효과
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // 모바일 메뉴 토글
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        mobileToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // 부드러운 스크롤 효과
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 숫자 카운터 애니메이션
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter-value');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-count'));
+                const increment = target / 100;
+                let count = 0;
+                
+                const updateCounter = () => {
+                    count += increment;
+                    if (count < target) {
+                        counter.textContent = Math.floor(count);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                setTimeout(updateCounter, 500);
+            });
+        }
+
+        // 페이지 로드 시 카운터 애니메이션 실행
+        document.addEventListener('DOMContentLoaded', animateCounters);
+    </script>
+</body>
+</html>
