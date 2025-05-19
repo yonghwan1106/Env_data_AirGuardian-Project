@@ -249,6 +249,13 @@
             margin-bottom: 40px;
         }
 
+        .hero-cta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
         .hero-slider-nav {
             position: absolute;
             bottom: 50px;
@@ -806,6 +813,17 @@
                 font-size: 1rem;
             }
 
+            .hero-cta {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .hero-cta .btn {
+                margin-left: 0 !important;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
             .slider-dots .dot {
                 width: 30px;
                 height: 30px;
@@ -900,7 +918,10 @@
             </div>
             <p class="hero-description">취약계층을 위한 맞춤형 대기질 알림 서비스로 건강한 삶을 지원합니다. 개인별 건강상태에 최적화된 대기오염 정보와 행동지침을 제공합니다.</p>
             <div class="hero-cta">
-                <a href="#features" class="btn btn-primary">주요 기능 살펴보기</a>
+                <a href="about.html" class="btn btn-primary">주요 기능 살펴보기</a>
+                <a href="https://notebooklm.google.com/notebook/8e96f098-a3b5-4c3f-8d09-0490e137a37e/audio" target="_blank" class="btn btn-secondary" style="margin-left: 15px;">
+                    <i class="fas fa-headphones" style="margin-right: 8px;"></i>음성으로 듣기
+                </a>
             </div>
         </div>
 
